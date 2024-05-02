@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DreadScripts
+namespace DreadScripts.TextureUtility
 {
     [System.Serializable]
     public class TextureAutoPackerData : TAPDreadData<TextureAutoPackerData>

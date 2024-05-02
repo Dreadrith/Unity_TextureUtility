@@ -3,12 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-//Made by Dreadrith#3238
-//Server: https://discord.gg/ZsPfrGn
-//Github: https://github.com/Dreadrith/DreadScripts
-//Gumroad: https://gumroad.com/dreadrith
-
-namespace DreadScripts
+namespace DreadScripts.TextureUtility
 {
     public class TextureUtility : EditorWindow
     {
@@ -101,7 +96,7 @@ namespace DreadScripts
         }
         #endregion
 
-        [MenuItem("DreadTools/Utilities/Texture Utility")]
+        [MenuItem("DreadTools/Utility/Texture Utility")]
         private static void showWindow()
         {
             EditorWindow w = GetWindow<TextureUtility>(false, "Texture Utility", true);

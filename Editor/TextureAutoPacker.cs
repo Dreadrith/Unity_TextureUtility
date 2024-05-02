@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 
 
-namespace DreadScripts
+namespace DreadScripts.TextureUtility
 {
     public class TextureAutoPackerWindow : EditorWindow
     {
@@ -14,7 +14,7 @@ namespace DreadScripts
         private static UnityEditorInternal.ReorderableList modulesList;
         private static Texture2D titleTexture;
 
-        [MenuItem("DreadTools/Utilities/Texture Auto-Packer")]
+        [MenuItem("DreadTools/Utility/Texture Auto-Packer")]
         public static void ShowWindow()
         {
             EditorWindow w = GetWindow<TextureAutoPackerWindow>(false, "Texture Auto-Packer", true);

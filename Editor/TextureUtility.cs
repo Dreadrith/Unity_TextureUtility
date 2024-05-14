@@ -1099,11 +1099,8 @@ namespace DreadScripts.TextureUtility
             using (new GUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("<b>Made by Dreadrith#3238</b>",creditLabelStyle))
-                {
-                    Application.OpenURL("https://github.com/Dreadrith/DreadScripts");
-                }
-                
+                if (GUILayout.Button("<b>Made by @Dreadrith</b>", creditLabelStyle))
+                    Application.OpenURL("https://linktr.ee/Dreadrith");
             }
         }
     }

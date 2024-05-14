@@ -650,7 +650,11 @@ namespace DreadScripts.TextureUtility
                         if (HSVEditing)
                         {
                             Color.RGBToHSV(currentColor, out float h, out float s, out float v);
-                            currentColor = Color.HSVToRGB(hueShifting ? (Mathf.Repeat(h + (hueShiftFloat * (maskTexture && maskHueShift ? maskColors[i].r : 1)), 1)) : h, saturating ? (Mathf.Clamp01(s + (saturationFloat * (maskTexture && maskSaturate ? maskColors[i].r : 1)))) : s, v);
+                            if (hueShifting)
+                                h = Mathf.Repeat(h + (hueShiftFloat * (maskTexture && maskHueShift ? maskColors[i].r : 1)), 1);
+                            if (saturating)
+                                s = Mathf.Clamp01(s * (1 + (saturationFloat * (maskTexture && maskSaturate ? maskColors[i].r : 1))));
+                            currentColor = Color.HSVToRGB(h, s, v);
                             currentColor.a = myColors[i].a;
                         }
                         if (colorizing)

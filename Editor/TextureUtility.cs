@@ -623,13 +623,8 @@ namespace DreadScripts.TextureUtility
             bool editing = colorEditing || colorInverting || unpacking;
             bool masking = ((maskColorize && colorizing) || (maskInvert && colorInverting) || (maskSaturate && saturating) || (maskHueShift && hueShifting)) && maskTexture;
 
-            Color[] maskColors;
-            if (masking)
-            {
-                GetColors(maskTexture, texWidth, texHeight, out maskColors, true);
-            }
-            else
-                maskColors = null;
+            Color[] maskColors = null;
+            if (masking) GetColors(maskTexture, texWidth, texHeight, out maskColors, true);
 
             Color[] colorizeTextureColors;
             if (colorizing && textureColorize)
@@ -643,6 +638,7 @@ namespace DreadScripts.TextureUtility
             Color[] newColors = new Color[myColors.Length];
             if (editing)
             {
+                bool hasMaskTexture = maskTexture != null;
                 Parallel.For(0, myColors.Length, i =>
                 {
                     Color currentColor = myColors[i];
@@ -653,9 +649,9 @@ namespace DreadScripts.TextureUtility
                         {
                             Color.RGBToHSV(currentColor, out float h, out float s, out float v);
                             if (hueShifting)
-                                h = Mathf.Repeat(h + (hueShiftFloat * (maskTexture && maskHueShift ? maskColors[i].r : 1)), 1);
+                                h = Mathf.Repeat(h + (hueShiftFloat * (hasMaskTexture && maskHueShift ? maskColors[i].r : 1)), 1);
                             if (saturating)
-                                s = Mathf.Clamp01(s * (1 + (saturationFloat * (maskTexture && maskSaturate ? maskColors[i].r : 1))));
+                                s = Mathf.Clamp01(s * (1 + (saturationFloat * (hasMaskTexture && maskSaturate ? maskColors[i].r : 1))));
                             currentColor = Color.HSVToRGB(h, s, v);
                             currentColor.a = myColors[i].a;
                         }
@@ -663,17 +659,17 @@ namespace DreadScripts.TextureUtility
                         if (colorizing)
                         {
                             float oga = currentColor.a;
-                            currentColor = Color.Lerp(currentColor, textureColorize ? colorizeTextureColors[i] : colorizeColor, colorizeFloat * (maskColorize && maskTexture ? maskColors[i].r : 1));
+                            currentColor = Color.Lerp(currentColor, textureColorize ? colorizeTextureColors[i] : colorizeColor, colorizeFloat * (maskColorize && hasMaskTexture ? maskColors[i].r : 1));
 
                             if (!alphaColorize)
                                 currentColor.a = oga;
                         }
                     }
 
-                    float r = colorInverting && invertRedS ? currentColor.r - ((currentColor.r - (1 - currentColor.r)) * (maskInvert && maskTexture ? maskColors[i].r : 1)) : currentColor.r;
-                    float g = colorInverting && invertGreenS ? currentColor.g - ((currentColor.g - (1 - currentColor.g)) * (maskInvert && maskTexture ? maskColors[i].g : 1)) : currentColor.g;
-                    float b = colorInverting && invertBlueS ? currentColor.b - ((currentColor.b - (1 - currentColor.b)) * (maskInvert && maskTexture ? maskColors[i].b : 1)) : currentColor.b;
-                    float a = colorInverting && invertAlphaS ? currentColor.a - ((currentColor.a - (1 - currentColor.a)) * (maskInvert && maskTexture ? maskColors[i].a : 1)) : currentColor.a;
+                    float r = colorInverting && invertRedS ? currentColor.r - ((currentColor.r - (1 - currentColor.r)) * (maskInvert && hasMaskTexture ? maskColors[i].r : 1)) : currentColor.r;
+                    float g = colorInverting && invertGreenS ? currentColor.g - ((currentColor.g - (1 - currentColor.g)) * (maskInvert && hasMaskTexture ? maskColors[i].g : 1)) : currentColor.g;
+                    float b = colorInverting && invertBlueS ? currentColor.b - ((currentColor.b - (1 - currentColor.b)) * (maskInvert && hasMaskTexture ? maskColors[i].b : 1)) : currentColor.b;
+                    float a = colorInverting && invertAlphaS ? currentColor.a - ((currentColor.a - (1 - currentColor.a)) * (maskInvert && hasMaskTexture ? maskColors[i].a : 1)) : currentColor.a;
 
                     newColors[i] = new Color(r, g, b, a);
                 });

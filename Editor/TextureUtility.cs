@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DreadScripts.TextureUtility
 {
@@ -642,7 +643,7 @@ namespace DreadScripts.TextureUtility
             Color[] newColors = new Color[myColors.Length];
             if (editing)
             {
-                for (int i = 0; i < myColors.Length; i++)
+                Parallel.For(0, myColors.Length, i =>
                 {
                     Color currentColor = myColors[i];
 
@@ -658,6 +659,7 @@ namespace DreadScripts.TextureUtility
                             currentColor = Color.HSVToRGB(h, s, v);
                             currentColor.a = myColors[i].a;
                         }
+                        
                         if (colorizing)
                         {
                             float oga = currentColor.a;
@@ -674,7 +676,7 @@ namespace DreadScripts.TextureUtility
                     float a = colorInverting && invertAlphaS ? currentColor.a - ((currentColor.a - (1 - currentColor.a)) * (maskInvert && maskTexture ? maskColors[i].a : 1)) : currentColor.a;
 
                     newColors[i] = new Color(r, g, b, a);
-                }
+                });
             }
             newTexture.SetPixels(editing ? newColors : myColors);
             newTexture.Apply();
@@ -1047,7 +1049,6 @@ namespace DreadScripts.TextureUtility
             return reversed;
         }
 
-        #region Extracted From DS_CommonMethods
         public static void AssetFolderPath(ref string variable, string title, string playerpref)
         {
             EditorGUILayout.BeginHorizontal();
@@ -1076,7 +1077,6 @@ namespace DreadScripts.TextureUtility
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);  
         }
-        #endregion
 
         private static void Credit()
         {

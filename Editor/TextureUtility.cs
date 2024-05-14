@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
@@ -776,7 +777,7 @@ namespace DreadScripts.TextureUtility
 
             GetEncoding(newTexture, encoding, out byte[] data, out string ext);
 
-            RecreateFolders(creatingPath);
+            ReadyFolder(creatingPath);
             SaveTexture(data, AssetDatabase.GenerateUniqueAssetPath(creatingPath +"/Generated Texture"+ext), true, pingTexture);
         }
 
@@ -1070,26 +1071,10 @@ namespace DreadScripts.TextureUtility
             EditorGUILayout.EndHorizontal();
         }
 
-        public static void RecreateFolders(string fullPath)
+        public static void ReadyFolder(string folderPath)
         {
-            string[] folderNames = fullPath.Split('/');
-            string[] folderPaths = new string[folderNames.Length];
-            for (int i = 0; i < folderNames.Length; i++)
-            {
-                folderPaths[i] = folderNames[0];
-                for (int j = 1; j <= i; j++)
-                {
-                    folderPaths[i] = folderPaths[i] + "/" + folderNames[j];
-                }
-            }
-            for (int i = 0; i < folderPaths.Length; i++)
-            {
-                if (!AssetDatabase.IsValidFolder(folderPaths[i]))
-                {
-                    AssetDatabase.CreateFolder(folderPaths[i].Substring(0, folderPaths[i].LastIndexOf('/')), folderPaths[i].Substring(folderPaths[i].LastIndexOf('/') + 1, folderPaths[i].Length - folderPaths[i].LastIndexOf('/') - 1));
-                }
-
-            }
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);  
         }
         #endregion
 

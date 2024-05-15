@@ -51,6 +51,7 @@ namespace DreadScripts.TextureUtility
         private static float hueShiftFloat;
 
         private static bool saturating;
+        private static SaturationMethodEnum saturationMethod = SaturationMethodEnum.Poiyomi;
         private static bool maskSaturate=true;
         private static float saturationFloat;
 
@@ -79,6 +80,12 @@ namespace DreadScripts.TextureUtility
             Rotate180,
             FlipHorizontal,
             FlipVertical
+        }
+        
+        public enum SaturationMethodEnum
+        {
+            Poiyomi,
+            Gimp
         }
 
         #region Creating Tab Variables
@@ -251,8 +258,9 @@ namespace DreadScripts.TextureUtility
                             GUI.backgroundColor = originalGUIColor;
                             maskSaturate = GUILayout.Toggle(maskSaturate, new GUIContent("M", "Use Mask"), EditorStyles.miniButton, GUILayout.Width(21), GUILayout.Height(16));
                             EditorGUIUtility.labelWidth = 65;
-                            saturationFloat = EditorGUILayout.Slider("Saturate", saturationFloat, -1, 1);
+                            saturationFloat = EditorGUILayout.Slider("Saturate", saturationFloat, -1, saturationMethod == SaturationMethodEnum.Poiyomi ? 10 : 1);
                             EditorGUIUtility.labelWidth = 0;
+                            saturationMethod = (SaturationMethodEnum)EditorGUILayout.EnumPopup(GUIContent.none, saturationMethod, GUILayout.Width(70));
                         }
                     }
                     using (new GUILayout.HorizontalScope("box"))
@@ -639,6 +647,7 @@ namespace DreadScripts.TextureUtility
             if (editing)
             {
                 bool hasMaskTexture = maskTexture != null;
+                float tempSatValue = saturationMethod == SaturationMethodEnum.Poiyomi ? saturationFloat + 1 : saturationFloat;
                 Parallel.For(0, myColors.Length, i =>
                 {
                     Color currentColor = myColors[i];
@@ -650,9 +659,22 @@ namespace DreadScripts.TextureUtility
                             Color.RGBToHSV(currentColor, out float h, out float s, out float v);
                             if (hueShifting)
                                 h = Mathf.Repeat(h + (hueShiftFloat * (hasMaskTexture && maskHueShift ? maskColors[i].r : 1)), 1);
-                            if (saturating)
-                                s = Mathf.Clamp01(s * (1 + (saturationFloat * (hasMaskTexture && maskSaturate ? maskColors[i].r : 1))));
+                            if (saturating && saturationMethod == SaturationMethodEnum.Gimp)
+                                s = Mathf.Clamp01(s * (1 + tempSatValue * (hasMaskTexture && maskSaturate ? maskColors[i].r : 1)));
                             currentColor = Color.HSVToRGB(h, s, v);
+
+                            if (saturating && saturationMethod == SaturationMethodEnum.Poiyomi)
+                            {
+                                //return lerp(dot(col, float3(0.3, 0.59, 0.11)), col, interpolator);
+                                //Doesn't seem to replicate the exact effect, but looks close. Thank you Poiyomi!
+                                var dot = currentColor.r * 0.3f + currentColor.g * 0.59f + currentColor.b * 0.11f;
+                                var factor = tempSatValue;
+                                if (hasMaskTexture && maskSaturate)
+                                    factor *= maskColors[i].r;
+                                
+                                currentColor = new Color(dot + factor * (currentColor.r - dot), dot + factor * (currentColor.g - dot), dot + factor * (currentColor.b - dot), currentColor.a);
+                                 
+                            }
                             currentColor.a = myColors[i].a;
                         }
                         

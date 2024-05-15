@@ -1,12 +1,3 @@
-Made by Dreadrith#3238
-Server: https://discord.gg/ZsPfrGn
-Github: https://github.com/Dreadrith/DreadScripts
-Gumroad: https://gumroad.com/Dreadrith
-Ko-fi: https://ko-fi.com/dreadrith
-
-Version: v2.0.1
-Download: https://github.com/Dreadrith/DreadScripts/releases/download/Scripts/TextureUtility.unitypackage
-
 Texture Utility is made to make mundane and simple edits easier and quicker by doing it straight through Unity
 Found under DreadTools > Utilities > Texture Utility
 
